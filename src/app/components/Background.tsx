@@ -22,13 +22,13 @@ export default function Home() {
             className={`absolute transition-transform`}
             style={{
                 left: `calc(${0}% + ${offset.x * 0.5}px)`,
-                bottom: `calc(${0}% + ${offset.y * 0.4}px)`,
+                top: `calc(${0}% + ${offset.y * 0.4}px)`,
             }}
             ><img
                 src={"/images/clouds.png"}
                 alt={"Clouds"}
                 className="object-contain"
-                style={{ maxWidth: `100%` }}
+                style={{ maxWidth: `100vw` }}
             />
         </div>
         
