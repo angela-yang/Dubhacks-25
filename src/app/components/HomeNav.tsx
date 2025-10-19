@@ -17,7 +17,9 @@ export default function HomeNav() {
             }}
         >
             <button className="bg-[rgb(235,199,148)] text-[rgb(32,74,65)] p-3 rounded-full shadow-lg hover:bg-[rgb(106,132,146)] transition cursor-pointer">
-                <FaHome size={24} />
+                <Link href="/">
+                    <FaHome size={24} />
+                </Link>
             </button>
 
             {isOpen && (
