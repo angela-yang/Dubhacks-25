@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 
 type BrushType =
   | "Sky" | "Mountain" | "Lake" | "Trees" | "Flowers"
-  | "Boulders" | "Waterfall" | "Path" | "Grass" | "Dirt" | "Eraser";
+  | "Boulders" | "Path" | "Grass" | "Dirt" | "Eraser";
 
 // This color map perfectly matches the one in your Python server
 const brushColors: Record<BrushType, string> = {
@@ -18,7 +18,6 @@ const brushColors: Record<BrushType, string> = {
   Trees: "rgb(46,139,87)",      // Backend knows as FOREST_TREES
   Flowers: "rgb(231,154,184)",
   Boulders: "rgb(164,159,154)",  // Backend knows as BOULDERS_CLIFF
-  Waterfall: "rgb(137,214,255)",
   Path: "rgb(191,168,147)",      // Backend knows as PATH_ROAD
   Grass: "rgb(122,180,96)",     // Backend knows as GRASS_FIELD
   Dirt: "rgb(137,115,96)",       // Backend knows as EARTH_LAND
