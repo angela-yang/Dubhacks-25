@@ -90,6 +90,32 @@ const Canvas: React.FC = () => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
+  const submitCanvas = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dataURL = canvas.toDataURL("image/png");
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image: dataURL }),
+      });
+
+      if (response.ok) {
+        alert("Image submitted successfully!");
+      } else {
+        alert("Failed to submit image.");
+      }
+    } catch (error) {
+      console.error("Error submitting image:", error);
+      alert("Error submitting image.");
+    }
+  };
+
   return (
     <div className="flex flex-col items-center p-4 space-y-4">
       <div className="flex flex-wrap justify-center gap-3 items-center">
@@ -121,9 +147,16 @@ const Canvas: React.FC = () => {
 
         <button
           onClick={clearCanvas}
-          className="px-4 py-2 rounded-2xl bg-red-400 text-white font-semibold hover:bg-red-500 transition-all"
+          className="px-4 py-2 rounded-2xl bg-red-400 text-white font-semibold hover:bg-red-600 transition-all cursor-pointer"
         >
           Clear
+        </button>
+
+        <button
+          onClick={submitCanvas}
+          className="px-4 py-2 rounded-2xl bg-emerald-500 text-white font-semibold hover:bg-emerald-700 transition-all cursor-pointer"
+        >
+          Submit
         </button>
       </div>
 
