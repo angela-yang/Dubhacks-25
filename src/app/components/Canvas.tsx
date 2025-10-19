@@ -50,6 +50,13 @@ const Canvas: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  })
+
   const getCursorPosition = (
     e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
   ) => {
@@ -259,26 +266,28 @@ const Canvas: React.FC = () => {
         initial={{ y: 200, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1.5, type: "spring", stiffness: 50 }}
-        className="absolute bottom-[-12%] z-0"
+        className="absolute z-0"
       >
-        <img
-          src={"/images/easel.png"}
-          alt="Easel"
-          className="object-contain"
-          style={{ maxWidth: "100%" }}
-        />
+        <div className="relative w-[700px] h-[900px] flex items-center justify-center">
+          <img
+            src="/images/easel2.png"
+            alt="Easel"
+            className="absolute top-0 left-0 w-full h-full object-contain z-0 -mt-7"
+          />
+
+          <canvas
+            ref={canvasRef}
+            width={570}
+            height={570}
+            onMouseDown={startDrawing}
+            onMouseMove={draw}
+            onMouseUp={stopDrawing}
+            onMouseLeave={stopDrawing}
+            className="cursor-crosshair border-4 border-gray-400 rounded-lg z-10 drop-shadow-sm -mt-27"
+          />
+        </div>
       </motion.div>
 
-      <canvas
-        ref={canvasRef}
-        width={570}
-        height={570}
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        className="cursor-crosshair border-4 border-gray-400 rounded-lg z-50 drop-shadow-sm"
-      />
     </div>
   );
 };
