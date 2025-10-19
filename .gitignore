@@ -4,6 +4,7 @@ data
 
 /next-js-frontend/public/images/original
 /next-js-frontend/public/images/processed
+/next-js-frontend/.next
 # dependencies
 /next-js-frontend/node_modules
 /node_modules
