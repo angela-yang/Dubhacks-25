@@ -1,13 +1,19 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 
-type BrushType = "Mountain" | "Lake" | "Forest" | "Sky" | "Eraser";
+type BrushType = "Sky" | "Mountain" | "Lake" | "Trees" | "Flowers" | "Boulders" | "Waterfall" | "Path" | "Grass" | "Dirt" | "Eraser";
 
 const brushColors: Record<BrushType, string> = {
-  Mountain: "#8B7765",
-  Lake: "#4AA3D2",
-  Forest: "#2E8B57",
   Sky: "#B3E5FC",
+  Mountain: "#7F7A78",
+  Lake: "#4AA3D2",
+  Trees: "#2E8B57",
+  Flowers: "#E79AB8",
+  Boulders: "#A49F9A",
+  Waterfall: "#89D6FF",
+  Path: "#C0B6AD",
+  Grass: "#9AD0AB",
+  Dirt: "#897360",
   Eraser: "rgb(239,215,198)",
 };
 
@@ -97,7 +103,7 @@ const Canvas: React.FC = () => {
     const dataURL = canvas.toDataURL("image/png");
 
     try {
-      const response = await fetch("/api/upload", {
+      const response = await fetch("/api/send-to-python", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -8,8 +8,6 @@ export default function Home() {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[rgb(58,87,86)]">
       <HomeNav />
-
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[rgba(62, 95, 75, 0.25)] to-[rgba(44, 69, 56, 0.6)] pointer-events-none" />
       <Background />
 
       <div className="absolute inset-0 flex flex-col items-center justify-center -translate-y-15 text-center z-10 px-4">
