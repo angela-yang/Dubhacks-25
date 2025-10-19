@@ -42,7 +42,7 @@ TARGET_UI_CLASSES = [name for name in UI_BRUSH_MAPPING if name != "INVALID_OTHER
 
 # --- Initial Setup and Model Loading ---
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-device = "cuda" if torch.cuda.is_available() else "mps" if hasattr(torch.backends, "mps") and torch.backends.mps.is_available() else "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 try:
     # 1. SegFormer Setup

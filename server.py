@@ -11,15 +11,18 @@ import torch
 import uvicorn
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd  # <-- NEW IMPORT
 
+# --- 1. App Setup ---
+
+# Hardcoded API Key as requested
 GOOGLE_API_KEY = "AIzaSyBSWxfdbU5OGb3jApuw0W27n1ZMtFh3X6o"
 
 app = FastAPI()
 
-# Allow your Next.js app (localhost:3000) to talk to this server (localhost:5000)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], # Next.js dev server
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,6 +31,7 @@ app.add_middleware(
 # --- 2. Load Models & DB at Startup ---
 print("Loading models and database... This may take a moment.")
 PROCESSED_DIR = 'data/processed'
+METADATA_PATH = 'data/hike_metadata.csv' # <-- Path to your CSV
 MODEL_NAME_CLIP = "openai/clip-vit-large-patch14-336"
 device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 
@@ -47,23 +51,38 @@ for mask_path in glob.glob(os.path.join(PROCESSED_DIR, '*_masks.npy')):
         db_vectors.append(np.load(vector_path))
 print(f"✅ Models loaded on {device}. Database has {len(db_vectors)} items.")
 
+# --- NEW: Load Hike Metadata ---
+try:
+    df = pd.read_csv(METADATA_PATH)
+    # Set the 'Hike ID' column as the index for fast lookups
+    hike_metadata = df.set_index('Hike ID').to_dict('index')
+    print(f"✅ Hike metadata loaded. {len(hike_metadata)} hikes found.")
+except FileNotFoundError:
+    print(f"⚠️ WARNING: Metadata file not found at {METADATA_PATH}. App will run with empty data.")
+    hike_metadata = {}
+except Exception as e:
+    print(f"⚠️ WARNING: Error loading metadata: {e}")
+    hike_metadata = {}
+
+
 # --- 3. Class Definitions & Helper Functions ---
+# (Your helper functions remain the same)
 TARGET_UI_CLASSES = [
     "SKY", "MOUNTAIN", "WATER_BODY", "FOREST_TREES", "FLOWERS",
-    "BOULDERS_CLIFF", "WATERFALL", "PATH_ROAD", "GRASS_FIELD", "EARTH_LAND"
+    "BOULDERS_CLIFF", "PATH_ROAD", "GRASS_FIELD", "EARTH_LAND"
 ]
 FRONTEND_RGB_MAP = {
     "SKY": "rgb(179,229,252)", "MOUNTAIN": "rgb(97,115,97)",
     "WATER_BODY": "rgb(74,163,210)", "FOREST_TREES": "rgb(46,139,87)",
     "FLOWERS": "rgb(231,154,184)", "BOULDERS_CLIFF": "rgb(164,159,154)",
-    "WATERFALL": "rgb(137,214,255)", "PATH_ROAD": "rgb(191,168,147)",
+    "PATH_ROAD": "rgb(191,168,147)",
     "GRASS_FIELD": "rgb(122,180,96)", "EARTH_LAND": "rgb(137,115,96)"
 }
-PIXEL_THRESHOLD = 100 # Min pixels to count a class
-METRIC = 'iou'
+PIXEL_THRESHOLD = 100
+METRIC = 'dice'
 WEIGHT_IOU = 0.7
 WEIGHT_CLIP = 0.3
-TOP_K = 5
+TOP_K = 2 # Send 5 results
 
 def parse_rgb(rgb_string):
     match = re.search(r'rgb\((\d+),(\d+),(\d+)\)', rgb_string.replace(" ", ""))
@@ -96,17 +115,14 @@ def resize_mask_stack(mask_stack, target_shape):
     return resized_stack
 
 def calculate_avg_channel_metric(mask_stack1, mask_stack2, metric='iou'):
+    # Your scoring function with the "empty channel" fix
     mask_stack2 = resize_mask_stack(mask_stack2, mask_stack1.shape[1:])
     scores = []
     
-    # Check all channels (including sky, or start from 1, your choice)
-    for i in range(1, mask_stack1.shape[0]):
+    for i in range(1, mask_stack1.shape[0]): # Start from 1 to exclude sky
         mask1 = mask_stack1[i]
         mask2 = mask_stack2[i]
         
-        # --- NEW LOGIC ---
-        # Only score this channel if it's present in AT LEAST one of the images
-        # We use a small threshold in case of artifacts
         if np.sum(mask1) > 10 or np.sum(mask2) > 10: 
             if metric == 'iou':
                 intersection = np.sum(mask1 & mask2)
@@ -116,32 +132,12 @@ def calculate_avg_channel_metric(mask_stack1, mask_stack2, metric='iou'):
                 intersection = np.sum(mask1 * mask2)
                 sum_masks = np.sum(mask1) + np.sum(mask2)
                 score = 1.0 if sum_masks == 0 else (2.0 * intersection) / sum_masks
-            
             scores.append(score)
             
-    # --- MODIFIED RETURN ---
-    # If no channels were present at all (e.g., two blank images), return 0
-    # Otherwise, return the mean of the scores we *did* calculate.
     if not scores:
         return 0.0
     
     return np.mean(scores)
-
-# def calculate_avg_channel_metric(mask_stack1, mask_stack2, metric='iou'):
-#     mask_stack2 = resize_mask_stack(mask_stack2, mask_stack1.shape[1:])
-#     scores = []
-#     for i in range(1, mask_stack1.shape[0]):
-#         mask1, mask2 = mask_stack1[i], mask_stack2[i]
-#         if metric == 'iou':
-#             intersection = np.sum(mask1 & mask2)
-#             union = np.sum(mask1 | mask2)
-#             score = 1.0 if union == 0 else intersection / union
-#         else: # 'dice'
-#             intersection = np.sum(mask1 * mask2)
-#             sum_masks = np.sum(mask1) + np.sum(mask2)
-#             score = 1.0 if sum_masks == 0 else (2.0 * intersection) / sum_masks
-#         scores.append(score)
-#     return np.mean(scores)
 
 def calculate_cosine_similarity(vec1, vec2):
     vec1 = vec1 / np.linalg.norm(vec1)
@@ -152,10 +148,10 @@ def generate_text_prompt_from_sketch(sketch_pil_image, color_map, detected_class
     print("Connecting to Gemini API...")
     try:
         genai.configure(api_key=GOOGLE_API_KEY)
-    except KeyError:
-        print("FATAL: GOOGLE_API_KEY environment variable not set.")
-        return "a scenic landscape", "Error: GOOGLE_API_KEY not set"
-    
+    except Exception as e:
+        print(f"Error configuring Gemini: {e}")
+        return f"A scenic landscape with {', '.join(detected_classes)}", "Error (Config)"
+
     color_key_prompt = "You are an expert at describing landscape art. Analyze a user's sketch and generate a descriptive search query.\n\nHere is the color key:\n"
     for class_name, rgb_string in color_map.items():
         color_key_prompt += f"- {class_name}: {rgb_string}\n"
@@ -175,18 +171,12 @@ def generate_text_prompt_from_sketch(sketch_pil_image, color_map, detected_class
         "  \"description\": \"A short, 10-word descriptive phrase for a search query.\",\n"
         "  \"main_features\": [\"list\", \"of\", \"detected\", \"elements\"]\n"
         "}\n"
-        "```\n"
-        "Example Response:\n"
-        "```json\n"
-        "{\n"
-        "  \"description\": \"A large mountain reflecting in a blue lake.\",\n"
-        "  \"main_features\": [\"MOUNTAIN\", \"WATER_BODY\"]\n"
-        "}\n"
         "```"
     )
     full_prompt = color_key_prompt + prompt_nudge + json_instruction
     
     generation_config = genai.types.GenerationConfig(response_mime_type="application/json")
+    # --- Reverted model name as requested ---
     model = genai.GenerativeModel('gemini-2.5-flash-lite', generation_config=generation_config)
     
     try:
@@ -199,7 +189,7 @@ def generate_text_prompt_from_sketch(sketch_pil_image, color_map, detected_class
         print(f"Error calling Gemini API: {e}")
         return "a scenic landscape", f"Error: {e}"
 
-# --- 4. The API Endpoint ---
+# --- 4. The API Endpoint (MODIFIED) ---
 @app.post("/api/search")
 async def search_hikes(file: UploadFile = File(...)):
     try:
@@ -231,16 +221,12 @@ async def search_hikes(file: UploadFile = File(...)):
             
             comp_score = calculate_avg_channel_metric(user_mask_stack, db_mask_stack, metric=METRIC)
             clip_score = calculate_cosine_similarity(user_text_vector, db_vector)
-            text_score = f"({WEIGHT_IOU} * {comp_score}) + ({WEIGHT_CLIP} * {clip_score})"
             final_score = WEIGHT_IOU * comp_score + WEIGHT_CLIP * clip_score
             
             file_base = os.path.basename(db_mask_path).replace('_masks.npy', '')
             all_scores.append({
                 'file_base': file_base,
                 'score': final_score,
-                'text_score': text_score,
-                'comp_score': comp_score,
-                'clip_score': clip_score
             })
         
         # 5. Format Results
@@ -248,16 +234,42 @@ async def search_hikes(file: UploadFile = File(...)):
         
         results_to_send = []
         for res in top_k_results:
-            # Find the original file extension (.webp, .jpg, etc.)
-            original_file = glob.glob(f"data/original/{res['file_base']}.*")[0]
-            extension = os.path.splitext(original_file)[1]
+            file_base = res['file_base']
+            # remove numbers
+            file_base_no_digits = ''.join([i for i in file_base if not i.isdigit()])
             
+            print(file_base_no_digits)
+            # --- Get metadata for this hike ---
+            metadata = hike_metadata.get(file_base_no_digits, {})
+            print(metadata)
+            
+            # --- Reverted image path as requested ---
+            original_file_matches = glob.glob(f"data/original/{file_base}.*")
+            
+            if not original_file_matches:
+                print(f"Warning: Missing original image for {file_base} in data/original/. Skipping.")
+                continue
+
+            original_file_path = original_file_matches[0]
+            extension = os.path.splitext(original_file_path)[1]
+            
+            # --- Build the FULL JSON object for the frontend ---
             results_to_send.append({
-                'id': res['file_base'],
-                'score': res['text_score'],
-                # These URLs point to the /public folder in Next.js
-                'original_image_url': f"/images/original/{res['file_base']}{extension}",
-                'segmentation_map_url': f"/images/processed/{res['file_base']}_ui_map.png"
+                'id': file_base,
+                'original_image_url': f"/images/original/{file_base}{extension}",
+                
+                # --- Real data from CSV ---
+                'elevation': metadata.get('Highest Point (ft)', 0),
+                'trail_length': metadata.get('Round-Trip Distance (mi)', 0.0),
+                'difficulty': metadata.get('Difficulty (Words)', 'N/A'),
+                'region': metadata.get('Name', file_base), # 'Name' is the hike name
+                'trailhead': f"via {metadata.get('Trailhead Name', 'N/A')}",
+                'latitude': metadata.get('trailhead_lat', 47.6062), # Default
+                'longitude': metadata.get('trainhead_long', -122.3321), # Default
+                'desc': metadata.get('Description:', 'default description'),
+                
+                # --- Hardcoded placeholder as requested ---
+                'distance': metadata.get('Round-Trip Distance (mi)', 42) 
             })
 
         print("Search complete, sending results.")
@@ -265,6 +277,8 @@ async def search_hikes(file: UploadFile = File(...)):
         
     except Exception as e:
         print(f"Error during search: {e}")
+        import traceback
+        traceback.print_exc() # Print full error
         raise HTTPException(status_code=500, detail=str(e))
 
 # --- 5. Run the server ---

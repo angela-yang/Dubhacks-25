@@ -3,20 +3,21 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // <-- IMPORT useRouter
+import { FaQuestionCircle } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 type BrushType =
-  | "Sky" | "Mountain" | "Lake" | "Trees" | "Flowers"
-  | "Boulders" | "Waterfall" | "Path" | "Grass" | "Dirt" | "Eraser";
+  | "Sky" | "Mountain" | "Water" | "Trees" | "Flowers"
+  | "Boulders" | "Path" | "Grass" | "Dirt" | "Eraser";
 
 // This color map perfectly matches the one in your Python server
 const brushColors: Record<BrushType, string> = {
   Sky: "rgb(179,229,252)",
   Mountain: "rgb(97,115,97)",
-  Lake: "rgb(74,163,210)",       // Backend knows as WATER_BODY
+  Water: "rgb(74,163,210)",       // Backend knows as WATER_BODY
   Trees: "rgb(46,139,87)",      // Backend knows as FOREST_TREES
   Flowers: "rgb(231,154,184)",
   Boulders: "rgb(164,159,154)",  // Backend knows as BOULDERS_CLIFF
-  Waterfall: "rgb(137,214,255)",
   Path: "rgb(191,168,147)",      // Backend knows as PATH_ROAD
   Grass: "rgb(122,180,96)",     // Backend knows as GRASS_FIELD
   Dirt: "rgb(137,115,96)",       // Backend knows as EARTH_LAND
@@ -29,6 +30,7 @@ const Canvas: React.FC = () => {
   const [brush, setBrush] = useState<BrushType>("Mountain");
   const [brushSize, setBrushSize] = useState(50);
   const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
+  const [showHelp, setShowHelp] = useState(true);
   const [isLoading, setIsLoading] = useState(false); // <-- NEW: Loading state
   const router = useRouter(); // <-- NEW: Router for navigation
 
@@ -47,6 +49,13 @@ const Canvas: React.FC = () => {
       }
     }
   }, []);
+
+  // useEffect(() => {
+  //   document.body.style.overflow = 'hidden';
+  //   return () => {
+  //     document.body.style.overflow = 'auto';
+  //   };
+  // })
 
   const getCursorPosition = (
     e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
@@ -171,8 +180,8 @@ const Canvas: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-4 space-y-4">
-      <div className="flex flex-wrap justify-center gap-3 items-center">
+      <div className="flex flex-col items-center p-4 space-y-4 z-50 h-screen overflow-y-auto">
+        <div className="flex flex-wrap justify-center gap-3 items-center z-50">
         {(Object.keys(brushColors) as BrushType[]).map((type) => (
           <button
             key={type}
@@ -186,18 +195,24 @@ const Canvas: React.FC = () => {
             {type}
           </button>
         ))}
-        {/* ... (Brush Size, Clear, and Export buttons remain the same) ... */}
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-4 items-center mt-2 z-50">
         <div className="flex items-center space-x-2">
           <label className="text-sm font-medium">Size:</label>
           <input
-            type="range" min="10" max="100" value={brushSize}
+            type="range"
+            min="10"
+            max="100"
+            value={brushSize}
             onChange={(e) => setBrushSize(Number(e.target.value))}
             className="w-24 cursor-pointer"
           />
         </div>
+
         <button
           onClick={clearCanvas}
-          className="px-4 py-2 rounded-2xl bg-[rgb(223,84,86)] text-white font-semibold hover:bg-[rgb(187,58,61)] transition-all cursor-pointer"
+          className="px-4 py-2 rounded-2xl bg-[rgb(223,84,86)] text-white font-semibold hover:bg-[rgb(187,58,61)] transition-all z-50 cursor-pointer"
         >
           Clear
         </button>
@@ -206,29 +221,72 @@ const Canvas: React.FC = () => {
         <button
           onClick={submitCanvas}
           disabled={isLoading} // <-- NEW: Disable when loading
-          className="px-4 py-2 rounded-2xl bg-[rgb(84,190,121)] text-white font-semibold hover:bg-[rgb(60,162,96)] transition-all cursor-pointer disabled:bg-gray-500"
+          className="px-4 py-2 rounded-2xl bg-[rgb(84,190,121)] text-white font-semibold hover:bg-[rgb(60,162,96)] transition-all z-50 cursor-pointer disabled:bg-gray-500"
         >
           {isLoading ? "Searching..." : "Submit"}
         </button>
 
         <button
           onClick={exportCanvas}
-          className="px-4 py-2 rounded-2xl bg-[rgb(235,195,117)] text-white font-semibold hover:bg-[rgb(216,175,87)] transition-all cursor-pointer"
+          className="px-4 py-2 rounded-2xl bg-[rgb(235,195,117)] text-white font-semibold hover:bg-[rgb(216,175,87)] transition-all z-50 cursor-pointer"
         >
           Export
         </button>
+
+        <button
+          onClick={() => setShowHelp(true)}
+          className="flex items-center justify-center text-white hover:text-gray-300 z-50 text-2xl"
+          title="Help"
+        >
+          <FaQuestionCircle />
+        </button>
       </div>
 
-      <canvas
-        ref={canvasRef}
-        width={600}
-        height={600}
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        className="cursor-crosshair rounded-lg"
-      />
+
+      {showHelp && (
+        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 z-100">
+          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm text-center space-y-4">
+            <h2 className="text-lg font-semibold text-blue-500">How to Use</h2>
+            <p className="text-sm text-gray-700">
+              Select a brush to paint different elements. 
+              Use the slider to change brush size, and paint out the scene in your dreams! You can be as detailed or as rough as you want.
+              Click “Submit” to find your real-world location!
+           </p>
+           <button
+              onClick={() => setShowHelp(false)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      <motion.div
+        initial={{ y: 200, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1.5, type: "spring", stiffness: 50 }}
+        className="absolute z-0"
+      >
+        <div className="relative w-[700px] h-[900px] flex items-center justify-center mt-40">
+          <img
+            src="/images/easel2.png"
+            alt="Easel"
+            className="absolute top-0 left-0 w-full h-full object-contain z-0 -mt-7"
+          />
+
+          <canvas
+            ref={canvasRef}
+            width={570}
+            height={570}
+            onMouseDown={startDrawing}
+            onMouseMove={draw}
+            onMouseUp={stopDrawing}
+            onMouseLeave={stopDrawing}
+            className="cursor-crosshair border-4 border-gray-400 rounded-lg z-10 drop-shadow-sm -mt-27"
+          />
+        </div>
+      </motion.div>
     </div>
   );
 };

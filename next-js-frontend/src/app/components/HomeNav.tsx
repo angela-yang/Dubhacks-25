@@ -21,23 +21,6 @@ export default function HomeNav() {
                     <FaHome size={24} />
                 </Link>
             </button>
-
-            {isOpen && (
-                <div className="mt-2 bg-[rgb(106,132,146)] text-[rgb(232,215,194)] rounded-xl shadow-lg w-48 p-4 flex flex-col gap-3 cursor-pointer">
-                <Link href="/" className="flex items-center gap-2 p-2 rounded-xl hover:bg-[rgb(76,101,112)] transition">
-                    <FaHome /> Home
-                </Link>
-                <Link href="/paint" className="flex items-center gap-2 p-2 rounded-xl hover:bg-[rgb(76,101,112)] transition">
-                    <FaFeather /> Paint
-                </Link>
-                <Link href="/saved" className="flex items-center gap-2 p-2 rounded-xl hover:bg-[rgb(76,101,112)] transition">
-                    <FaBookmark /> Saved
-                </Link>
-                <Link href="/profile" className="flex items-center gap-2 p-2 rounded-xl hover:bg-[rgb(76,101,112)] transition">
-                    <FaUser /> Profile
-                </Link>
-                </div>
-            )}
         </div>
     );
 }

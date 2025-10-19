@@ -161,7 +161,6 @@ const brushColors = {
     Trees: "rgb(46,139,87)",
     Flowers: "rgb(231,154,184)",
     Boulders: "rgb(164,159,154)",
-    Waterfall: "rgb(137,214,255)",
     Path: "rgb(191,168,147)",
     Grass: "rgb(122,180,96)",
     Dirt: "rgb(137,115,96)",
@@ -309,7 +308,7 @@ const Canvas = ()=>{
                             children: type
                         }, type, false, {
                             fileName: "[project]/src/app/components/Canvas.tsx",
-                            lineNumber: 177,
+                            lineNumber: 176,
                             columnNumber: 11
                         }, ("TURBOPACK compile-time value", void 0))),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -320,7 +319,7 @@ const Canvas = ()=>{
                                 children: "Size:"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/components/Canvas.tsx",
-                                lineNumber: 191,
+                                lineNumber: 190,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -332,13 +331,13 @@ const Canvas = ()=>{
                                 className: "w-24 cursor-pointer"
                             }, void 0, false, {
                                 fileName: "[project]/src/app/components/Canvas.tsx",
-                                lineNumber: 192,
+                                lineNumber: 191,
                                 columnNumber: 11
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/app/components/Canvas.tsx",
-                        lineNumber: 190,
+                        lineNumber: 189,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -347,7 +346,7 @@ const Canvas = ()=>{
                         children: "Clear"
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/Canvas.tsx",
-                        lineNumber: 198,
+                        lineNumber: 197,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -357,7 +356,7 @@ const Canvas = ()=>{
                         children: isLoading ? "Searching..." : "Submit"
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/Canvas.tsx",
-                        lineNumber: 206,
+                        lineNumber: 205,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -366,13 +365,13 @@ const Canvas = ()=>{
                         children: "Export"
                     }, void 0, false, {
                         fileName: "[project]/src/app/components/Canvas.tsx",
-                        lineNumber: 214,
+                        lineNumber: 213,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/components/Canvas.tsx",
-                lineNumber: 175,
+                lineNumber: 174,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("canvas", {
@@ -386,13 +385,13 @@ const Canvas = ()=>{
                 className: "cursor-crosshair rounded-lg"
             }, void 0, false, {
                 fileName: "[project]/src/app/components/Canvas.tsx",
-                lineNumber: 222,
+                lineNumber: 221,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/components/Canvas.tsx",
-        lineNumber: 174,
+        lineNumber: 173,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };

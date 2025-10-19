@@ -26,7 +26,7 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         >
-          Bring your dream hike to life!
+          Bring your dream scenery to life!
         </motion.h3>
 
         <motion.div
