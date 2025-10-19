@@ -1,29 +1,34 @@
-"use client"
+"use client";
 import React, { useRef, useState, useEffect } from "react";
 
-type BrushType = "Mountain" | "Lake" | "Forest" | "Sky";
+type BrushType = "Mountain" | "Lake" | "Forest" | "Sky" | "Eraser";
 
 const brushColors: Record<BrushType, string> = {
   Mountain: "#8B7765",
   Lake: "#4AA3D2",
   Forest: "#2E8B57",
   Sky: "#B3E5FC",
+  Eraser: "rgb(239,215,198)",
 };
 
 const Canvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [isPainting, setIsPainting] = useState(false);
   const [brush, setBrush] = useState<BrushType>("Mountain");
-  const [brushSize, setBrushSize] = useState(10);
+  const [brushSize, setBrushSize] = useState(50);
+  const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(
+    null
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext("2d");
       if (ctx) {
-        ctx.fillStyle = "rgb(239,215,198)";
-        ctx.fillRect(0, 0, 600, 600);
+        ctx.fillStyle = brushColors.Eraser;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.lineCap = "round";
+        ctx.lineJoin = "round";
       }
     }
   }, []);
@@ -41,44 +46,48 @@ const Canvas: React.FC = () => {
   };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
-
     setIsPainting(true);
-    const { x, y } = getCursorPosition(e);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
+    setLastPos(getCursorPosition(e));
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     if (!isPainting) return;
-    const ctx = canvasRef.current?.getContext("2d");
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const { x, y } = getCursorPosition(e);
-    ctx.strokeStyle = brushColors[brush];
-    ctx.lineWidth = brushSize;
-    ctx.lineTo(x, y);
-    ctx.stroke();
+    const pos = getCursorPosition(e);
+
+    if (lastPos) {
+      ctx.beginPath();
+      ctx.moveTo(lastPos.x, lastPos.y);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.lineWidth = brushSize;
+      ctx.strokeStyle =
+        brush === "Eraser" ? brushColors.Eraser : brushColors[brush];
+      ctx.globalCompositeOperation = "source-over";
+      ctx.stroke();
+      ctx.closePath();
+    }
+
+    setLastPos(pos);
   };
 
   const stopDrawing = () => {
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
-    ctx.closePath();
     setIsPainting(false);
+    setLastPos(null);
   };
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgb(239,215,198)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
-    }
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = brushColors.Eraser;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   };
 
   return (
@@ -91,23 +100,25 @@ const Canvas: React.FC = () => {
             className={`px-4 py-2 rounded-2xl shadow-md font-semibold transition-all ${
               brush === type
                 ? "bg-blue-500 text-white"
-                : "bg-gray-400 hover:bg-gray-500"
+                : "bg-gray-400 hover:bg-gray-500 cursor-pointer"
             }`}
           >
             {type}
           </button>
         ))}
+
         <div className="flex items-center space-x-2">
           <label className="text-sm font-medium">Size:</label>
           <input
             type="range"
-            min="1"
-            max="50"
+            min="10"
+            max="100"
             value={brushSize}
             onChange={(e) => setBrushSize(Number(e.target.value))}
             className="w-24"
           />
         </div>
+
         <button
           onClick={clearCanvas}
           className="px-4 py-2 rounded-2xl bg-red-400 text-white font-semibold hover:bg-red-500 transition-all"
@@ -124,7 +135,7 @@ const Canvas: React.FC = () => {
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
-        className="cursor-crosshair"
+        className="cursor-crosshair rounded-lg"
       />
     </div>
   );

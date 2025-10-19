@@ -1,16 +1,50 @@
+"use client"
 import HomeNav from "./components/HomeNav"
 import Background from "./components/Background"
+import { motion } from "framer-motion"
+import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="w-full h-screen bg-cover bg-center" style={{ backgroundColor: "rgb(58,87,86)"}}>
+    <div className="relative w-full h-screen overflow-hidden bg-[rgb(58,87,86)]">
       <HomeNav />
+
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[rgba(62, 95, 75, 0.25)] to-[rgba(44, 69, 56, 0.6)] pointer-events-none" />
       <Background />
-      <div className="w-full flex flex-col justify-center text-center absolute mt-50 z-5">
-        <h1 className="font-mono text-4xl bold text-white"> Paint-a-Hike </h1>
-        <br/>
-        <h3 className="font-mono text-3xl text-white">Bring your dream hike to life!</h3>
+
+      <div className="absolute inset-0 flex flex-col items-center justify-center -translate-y-15 text-center z-10 px-4">
+        <motion.h1
+          className="text-6xl md:text-7xl font-bold text-white drop-shadow-lg"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          Paint-a-Hike
+        </motion.h1>
+
+        <motion.h3
+          className="mt-4 text-2xl md:text-3xl text-gray-200 font-light"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        >
+          Bring your dream hike to life!
+        </motion.h3>
+
+        <motion.div
+          className="mt-10 z-20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.8 }}
+        >
+          <Link href="/paint">
+            <button className="bg-[rgb(76,101,112)] hover:bg-[rgb(106,132,146)] text-white text-xl font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 cursor-pointer">
+              Start Painting
+            </button>
+          </Link>
+        </motion.div>
       </div>
+
       <link rel="icon" href="/images/mt.png" type="image/png" sizes="any" />
     </div>
   )

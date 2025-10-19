@@ -1,92 +1,106 @@
 "use client"
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
-export default function Home() {
-    const [offset, setOffset] = useState({ x: 0, y: 0 });
+export default function Background() {
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-      const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
       const x = ((e.clientX - innerWidth / 2) / innerWidth) * -30;
       const y = ((e.clientY - innerHeight / 2) / innerHeight) * -30;
       setOffset({ x, y });
-      };
-
-      window.addEventListener("mousemove", handleMouseMove);
-      return () => window.removeEventListener("mousemove", handleMouseMove);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  return(
+  const parallaxStyle = (xFactor: number, yFactor: number) => ({
+    transform: `translate(${offset.x * xFactor}px, ${offset.y * yFactor}px)`,
+  });
+
+  return (
     <div className="absolute w-full h-full overflow-hidden">
-        <div
-            className={`absolute transition-transform`}
-            style={{
-                left: `calc(${0}% + ${offset.x * 0.5}px)`,
-                top: `calc(${0}% + ${offset.y * 0.4}px)`,
-            }}
-            ><img
-                src={"/images/clouds.png"}
-                alt={"Clouds"}
-                className="object-contain"
-                style={{ maxWidth: `100vw` }}
-            />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2, duration: 2 }}
+        className="absolute left-0 top-0"
+      >
+        <div style={parallaxStyle(0.5, 0.4)}>
+          <img
+            src={"/images/clouds.png"}
+            alt="Clouds"
+            className="object-contain"
+            style={{ maxWidth: "100vw" }}
+          />
         </div>
-        
-        <div
-            className={`absolute transition-transform`}
-            style={{
-                left: `calc(${-5}% + ${offset.x * 0.5}px)`,
-                bottom: `calc(${0}% + ${offset.y * 0.4}px)`,
-            }}
-            ><img
-                src={"/images/mt3.png"}
-                alt={"Mountain"}
-                className="object-contain"
-                style={{ maxWidth: `100%` }}
-            />
-        </div>
+      </motion.div>
 
-        <div
-            className={`absolute transition-transform`}
-            style={{
-                left: `calc(${-5}% + ${offset.x * 0.8}px)`,
-                bottom: `calc(${-5}% + ${offset.y * 0.8}px)`,
-            }}
-            ><img
-                src={"/images/mt2.png"}
-                alt={"Mountain"}
-                className="object-contain"
-                style={{ maxWidth: `110%` }}
-            />
+      <motion.div
+        initial={{ y: 200, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.5, duration: 1.5, type: "spring", stiffness: 50 }}
+        className="absolute left-[-5%] bottom-0"
+      >
+        <div style={parallaxStyle(0.5, 0.4)}>
+          <img
+            src={"/images/mt3.png"}
+            alt="Mountain"
+            className="object-contain"
+            style={{ maxWidth: "100%" }}
+          />
         </div>
+      </motion.div>
 
-        <div
-            className={`absolute transition-transform`}
-            style={{
-                left: `calc(${-5}% + ${offset.x * 1.5}px)`,
-                bottom: `calc(${-10}% + ${offset.y * 2.0}px)`,
-            }}
-            ><img
-                src={"/images/mt1.png"}
-                alt={"Mountain"}
-                className="object-contain"
-                style={{ maxWidth: `110%` }}
-            />
+      <motion.div
+        initial={{ y: 250, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.7, duration: 1.5, type: "spring", stiffness: 50 }}
+        className="absolute left-[-5%] bottom-[-5%]"
+      >
+        <div style={parallaxStyle(0.8, 0.8)}>
+          <img
+            src={"/images/mt2.png"}
+            alt="Mountain"
+            className="object-contain"
+            style={{ maxWidth: "110%" }}
+          />
         </div>
-        
-        <div
-            className={`absolute transition-transform`}
-            style={{
-                left: `calc(${-5}% + ${offset.x * 1.0}px)`,
-                bottom: `calc(${-4}% + ${offset.y * 1.0}px)`,
-            }}
-            ><img
-                src={"/images/trees.png"}
-                alt={"Trees"}
-                className="object-contain"
-                style={{ maxWidth: `105%` }}
-            />
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 300, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.9, duration: 1.5, type: "spring", stiffness: 50 }}
+        className="absolute left-[-5%] bottom-[-10%]"
+      >
+        <div style={parallaxStyle(1.5, 2.0)}>
+          <img
+            src={"/images/mt1.png"}
+            alt="Mountain"
+            className="object-contain"
+            style={{ maxWidth: "110%" }}
+          />
         </div>
-      </div>
-  )
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 1.1, duration: 1.2, type: "spring", stiffness: 100 }}
+        className="absolute left-[-5%] bottom-[-4%]"
+      >
+        <div style={parallaxStyle(1.0, 1.0)}>
+          <img
+            src={"/images/trees.png"}
+            alt="Trees"
+            className="object-contain"
+            style={{ maxWidth: "105%" }}
+          />
+        </div>
+      </motion.div>
+    </div>
+  );
 }
