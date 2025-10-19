@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
+import { FaQuestionCircle } from "react-icons/fa";
 
 type BrushType = "Sky" | "Mountain" | "Lake" | "Trees" | "Flowers" | "Boulders" | "Waterfall" | "Path" | "Grass" | "Dirt" | "Eraser";
 
@@ -22,9 +23,8 @@ const Canvas: React.FC = () => {
   const [isPainting, setIsPainting] = useState(false);
   const [brush, setBrush] = useState<BrushType>("Mountain");
   const [brushSize, setBrushSize] = useState(50);
-  const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(
-    null
-  );
+  const [lastPos, setLastPos] = useState<{ x: number; y: number } | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -39,9 +39,7 @@ const Canvas: React.FC = () => {
     }
   }, []);
 
-  const getCursorPosition = (
-    e: React.MouseEvent<HTMLCanvasElement, MouseEvent>
-  ) => {
+  const getCursorPosition = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
@@ -64,7 +62,6 @@ const Canvas: React.FC = () => {
     if (!ctx) return;
 
     const pos = getCursorPosition(e);
-
     if (lastPos) {
       ctx.beginPath();
       ctx.moveTo(lastPos.x, lastPos.y);
@@ -76,7 +73,6 @@ const Canvas: React.FC = () => {
       ctx.stroke();
       ctx.closePath();
     }
-
     setLastPos(pos);
   };
 
@@ -90,7 +86,6 @@ const Canvas: React.FC = () => {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = brushColors.Eraser;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -101,21 +96,14 @@ const Canvas: React.FC = () => {
     if (!canvas) return;
 
     const dataURL = canvas.toDataURL("image/png");
-
     try {
       const response = await fetch("/api/send-to-python", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image: dataURL }),
       });
-
-      if (response.ok) {
-        alert("Image submitted successfully!");
-      } else {
-        alert("Failed to submit image.");
-      }
+      if (response.ok) alert("Image submitted successfully!");
+      else alert("Failed to submit image.");
     } catch (error) {
       console.error("Error submitting image:", error);
       alert("Error submitting image.");
@@ -125,7 +113,6 @@ const Canvas: React.FC = () => {
   const exportCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const dataURL = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = dataURL;
@@ -150,6 +137,15 @@ const Canvas: React.FC = () => {
           </button>
         ))}
 
+        <button
+          onClick={clearCanvas}
+          className="px-4 py-2 rounded-2xl bg-[rgb(223,84,86)] text-white font-semibold hover:bg-[rgb(187,58,61)] transition-all cursor-pointer"
+        >
+          Clear
+        </button>
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-4 items-center mt-2">
         <div className="flex items-center space-x-2">
           <label className="text-sm font-medium">Size:</label>
           <input
@@ -161,13 +157,6 @@ const Canvas: React.FC = () => {
             className="w-24 cursor-pointer"
           />
         </div>
-
-        <button
-          onClick={clearCanvas}
-          className="px-4 py-2 rounded-2xl bg-[rgb(223,84,86)] text-white font-semibold hover:bg-[rgb(187,58,61)] transition-all cursor-pointer"
-        >
-          Clear
-        </button>
 
         <button
           onClick={submitCanvas}
@@ -182,7 +171,34 @@ const Canvas: React.FC = () => {
         >
           Export
         </button>
+
+        <button
+          onClick={() => setShowHelp(true)}
+          className="flex items-center justify-center text-gray-800 hover:text-blue-500 text-2xl"
+          title="Help"
+        >
+          <FaQuestionCircle />
+        </button>
       </div>
+
+      {showHelp && (
+        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm text-center space-y-4">
+            <h2 className="text-lg font-semibold text-blue-500">How to Use</h2>
+            <p className="text-sm text-gray-700">
+              Select a brush to paint different elements.  
+              Use the slider to change brush size.  
+              Click “Submit” to find your real-world location!
+            </p>
+            <button
+              onClick={() => setShowHelp(false)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       <canvas
         ref={canvasRef}
@@ -192,7 +208,7 @@ const Canvas: React.FC = () => {
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
-        className="cursor-crosshair rounded-lg"
+        className="cursor-crosshair rounded-lg shadow-md border border-gray-300"
       />
     </div>
   );
