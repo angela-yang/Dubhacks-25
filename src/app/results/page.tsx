@@ -1,25 +1,34 @@
-// src/app/results/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image"; // Use Next.js Image for optimization
-import HomeNav from "../components/HomeNav"; // Re-use your nav bar
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaArrowDown, FaArrowLeft } from "react-icons/fa";
+import HomeNav from "../components/HomeNav";
+import { LargeNumberLike } from "crypto";
 
-// This type MUST match the JSON response from your Python server
 interface SearchResult {
   id: string;
-  score: number;
-  original_image_url: string; // e.g., /images/original/hike_1.webp
-  segmentation_map_url: string; // e.g., /images/processed/hike_1_ui_map.png
+  original_image_url: string;
+  elevation: number;
+  trail_length: number;
+  distance: number;
+  difficulty: string;
+  region: string;
+  trailhead: string;
+  latitude: number;
+  longitude: number;
 }
 
 export default function ResultsPage() {
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [userSketch, setUserSketch] = useState<string | null>(null); // <-- NEW STATE
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [userSketch, setUserSketch] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isScrolling, setIsScrolling] = useState(false);
 
+  /*
   useEffect(() => {
     // On page load, read both items from session storage
     const storedResults = sessionStorage.getItem("searchResults");
@@ -33,92 +42,174 @@ export default function ResultsPage() {
     }
     setIsLoading(false);
   }, []); // Empty dependency array ensures this runs only once on load
+  */
+
+  useEffect(() => {
+    // HARDCODED RESULTS
+    const hardcodedResults: SearchResult[] = [
+      {
+        id: "Hike_1",
+        original_image_url: "/images/temp/hike1.jpg",
+        elevation: 10,
+        trail_length: 67,
+        distance: 420,
+        difficulty: "hard",
+        region: "Mount Mountain",
+        trailhead: "trailhead",
+        latitude: -10.000,
+        longitude: 15.000,
+      },
+      {
+        id: "Hike_2",
+        original_image_url: "/images/temp/hike2.jpg",
+        elevation: 10,
+        trail_length: 67,
+        distance: 420,
+        difficulty: "easy",
+        region: "Mountain",
+        trailhead: "trailhead",
+        latitude: 112.000,
+        longitude: 17.000,
+      },
+      {
+        id: "Hike_3",
+        original_image_url: "/images/temp/hike3.jpg",
+        elevation: 10,
+        trail_length: 67,
+        distance: 420,
+        difficulty: "medium",
+        region: "Trail Mountain",
+        trailhead: "trailhead",
+        latitude: -10.000,
+        longitude: 15.000,
+      },
+      {
+        id: "Hike_4",
+        original_image_url: "/images/temp/hike4.jpeg",
+        elevation: 10,
+        trail_length: 67,
+        distance: 420,
+        difficulty: "super hard",
+        region: "Mountain",
+        trailhead: "trailhead",
+        latitude: 20.000,
+        longitude: 35.000,
+      },
+      {
+        id: "Hike_5",
+        original_image_url: "/images/temp/hike5.jpg",
+        elevation: 10,
+        trail_length: 67,
+        distance: 420,
+        difficulty: "super easy",
+        region: "Mountain",
+        trailhead: "trailhead",
+        latitude: 10.000,
+        longitude: 15.000,
+      },
+    ];
+
+    setResults(hardcodedResults);
+    setIsLoading(false);
+  }, []);
+
+  // Scroll handler to move between results
+  useEffect(() => {
+    const handleScroll = (e: WheelEvent) => {
+      if (isScrolling) return;
+      setIsScrolling(true);
+
+      if (e.deltaY > 0) {
+        // Scroll down
+        setCurrentIndex((prev) => (prev + 1) % results.length);
+      } else if (e.deltaY < 0) {
+        // Scroll up
+        setCurrentIndex((prev) => (prev - 1 + results.length) % results.length);
+      }
+
+      setTimeout(() => setIsScrolling(false), 800);
+    };
+
+    window.addEventListener("wheel", handleScroll, { passive: true });
+    return () => window.removeEventListener("wheel", handleScroll);
+  }, [isScrolling, results.length]);
 
   return (
-    <div className="w-full min-h-screen" style={{ backgroundColor: "rgb(88,128,115)" }}>
+    <div className="w-full h-screen overflow-hidden bg-[rgb(106,132,146)]">
       <HomeNav />
-      <div className="container mx-auto p-4 pt-20">
-        <h1 className="text-4xl text-white font-bold text-center mb-4">
-          Your Visual Matches!
-        </h1>
-
-        {/* --- NEW SECTION: DISPLAY USER SKETCH --- */}
-        {userSketch && (
-          <div className="flex flex-col items-center mb-10">
-            <h2 className="text-2xl text-white font-semibold mb-3">Your Sketch</h2>
-            {/* We use a regular <img> tag here because the src is a dataURL string */}
-            <img
-              src={userSketch}
-              alt="User's original sketch"
-              className="rounded-lg shadow-xl border-4 border-white"
-              style={{ width: '300px', height: '300px' }} // Display it a bit smaller
-            />
-          </div>
-        )}
-        {/* --- END NEW SECTION --- */}
-
-
-        {isLoading && (
-          <p className="text-white text-center">Loading results...</p>
-        )}
-
-        {!isLoading && results.length === 0 && (
-          <div className="text-center">
-            <p className="text-white text-xl mb-4">No results found.</p>
-            <Link href="/paint">
-              <button className="bg-[rgb(76,101,112)] hover:bg-[rgb(106,132,146)] text-white text-xl font-semibold px-8 py-3 rounded-full shadow-lg">
-                Try Painting Again
-              </button>
-            </Link>
-          </div>
-        )}
-
-        {!isLoading && results.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {results.map((result) => (
-              <div
-                key={result.id}
-                className="bg-[rgb(106,132,146)] rounded-lg shadow-xl overflow-hidden"
+      <div className="fixed top-0 left-0 w-full h-full flex flex-col items-center justify-center text-center text-white">
+        <AnimatePresence mode="wait">
+          {results.length > 0 && (
+            <motion.div
+              key={results[currentIndex].id}
+              initial={{ opacity: 0, y: 80 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -80 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className="w-full flex flex-col items-center justify-center"
+            >
+              <motion.h1
+                className="text-4xl font-bold mb-4 drop-shadow-lg -translate-y-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
               >
-                <div className="grid grid-cols-2">
-                  {/* We must use a relative position container for Next.js Image */}
-                  <div className="relative w-full h-60">
-                    <Image
-                      src={result.original_image_url}
-                      alt={`Original image of ${result.id}`}
-                      layout="fill"
-                      objectFit="cover"
-                    />
-                  </div>
-                  <div className="relative w-full h-60">
-                    <Image
-                      src={result.segmentation_map_url}
-                      alt={`Segmentation map for ${result.id}`}
-                      layout="fill"
-                      objectFit="cover"
-                    />
-                  </div>
+                Your Imagination Comes to Life...
+              </motion.h1>
+
+              <motion.h3
+                className="mt-4 text-2xl md:text-3xl text-gray-100 font-light -translate-y-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+              >
+                <p><span>(</span>{results[currentIndex].latitude.toFixed(4)}<span>, </span>{results[currentIndex].longitude.toFixed(4)}<span>)</span></p>
+              </motion.h3>
+
+              <div className="flex flex-col justify-center w-full md:w-1/3 text-left text-gray-100">
+                <p className="text-3xl mb-1 text-bold">{results[currentIndex].region}</p>
+                <p className="text-lg italic">{results[currentIndex].trailhead}</p>
+              </div>
+            
+              <div className="flex flex-col w-full md:w-1/3">
+                <div className="relative w-full h-64 md:h-72 rounded-2xl overflow-hidden shadow-lg">
+                  <Image
+                    src={results[currentIndex].original_image_url}
+                    alt={`Original image of ${results[currentIndex].id}`}
+                    layout="fill"
+                    objectFit="cover"
+                  />
                 </div>
-                <div className="p-4 text-white">
-                  <h3 className="text-lg font-semibold truncate">{result.id}</h3>
-                  <p className="text-sm">
-                    Match Score: {result.score.toFixed(4)}
-                  </p>
+                <div className="mt-4 text-left text-gray-100 space-y-2">
+                  <p><span className="font-semibold">Elevation:</span> {results[currentIndex].elevation} <span className="font-semibold"> mi</span></p>
+                  <p><span className="font-semibold">Trail Length:</span> {results[currentIndex].trail_length} <span className="font-semibold"> ft</span></p>
+                  <p><span className="font-semibold">Distance:</span> {results[currentIndex].distance}<span className="font-semibold"> ft</span></p>
+                  <p><span className="font-semibold">Difficulty:</span> {results[currentIndex].difficulty}</p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
 
-        {/* Back button */}
-        <div className="text-center mt-12 mb-8">
-          <Link href="/paint">
-            <button className="bg-[rgb(235,199,148)] text-[rgb(32,74,65)] text-xl font-semibold px-8 py-3 rounded-full shadow-lg hover:bg-[rgb(216,175,87)] transition-all">
-              ← Back to Painting
-            </button>
-          </Link>
-        </div>
+              <motion.div
+                className="absolute bottom-16 flex flex-col items-center text-white"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 1 }}
+              >
+                <p className="text-lg mb-2">Scroll to see more results</p>
+                <FaArrowDown className="text-2xl animate-bounce" />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
+      {/* Back button */}
+      <div className="fixed top-5 transform translate-x-1/2">
+        <Link href="/paint">
+          <button className="flex items-center justify-center text-white text-lg font-semibold py-3 transition-all cursor-pointer">
+            <FaArrowLeft className="text-xl mr-2" />
+            Back to Painting
+          </button>
+        </Link>
       </div>
     </div>
   );
