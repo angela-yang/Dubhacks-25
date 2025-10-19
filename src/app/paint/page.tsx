@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function Home() {
   return (
-    <div className="w-full h-screen bg-cover bg-center" style={{ backgroundColor: "rgb(88,128,115)"}}>
+    <div className="w-full h-screen bg-cover bg-center" style={{ backgroundColor: "rgb(147,194,207)"}}>
       <HomeNav />
 
       <div className="flex flex-col items-center justify-center text-center relative z-5 -translate-y-2">
@@ -14,7 +14,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="absolute w-full h-full overflow-hidden" style={{ backgroundColor: "rgb(88,128,115)"}}>
+      <div className="absolute w-full h-full overflow-hidden" style={{ backgroundColor: "rgb(147,194,207)"}}>
         <motion.div
           initial={{ y: 200, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

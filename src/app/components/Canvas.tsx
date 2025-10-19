@@ -278,7 +278,7 @@ const Canvas: React.FC = () => {
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
-        className="cursor-crosshair border-4 border-gray-400 rounded-lg z-50"
+        className="cursor-crosshair border-4 border-gray-400 rounded-lg z-50 drop-shadow-sm"
       />
     </div>
   );
