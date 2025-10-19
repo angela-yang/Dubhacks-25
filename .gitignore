@@ -1,6 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+archive
+data
 
+/next-js-frontend/public/images/original
+/next-js-frontend/public/images/processed
 # dependencies
+/next-js-frontend/node_modules
 /node_modules
 /.pnp
 .pnp.*
