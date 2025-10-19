@@ -342,7 +342,7 @@ function ResultsPage() {
                                                 className: "text-sm",
                                                 children: [
                                                     "Match Score: ",
-                                                    result.score.toFixed(4)
+                                                    result.score
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/app/results/page.tsx",

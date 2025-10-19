@@ -8,16 +8,16 @@ from tqdm import tqdm
 
 # --- Configuration ---
 # NOTE: Update 'data/images' to your actual folder path if different
-IMAGE_FOLDER = 'data/images' 
+IMAGE_FOLDER = 'data/original' 
 OUTPUT_DIR = 'data/processed' # Folder to save all output files: _masks.npy, _vector.npy, _ui_map.png
 MODEL_NAME_SEG = "nvidia/segformer-b5-finetuned-ade-640-640" 
 MODEL_NAME_CLIP = "openai/clip-vit-large-patch14-336" 
 
 # --- UI Brush Mapping and Colors (The core of your compositional search) ---
 DISTINCT_COLORS = [
-    '#4363D8', '#AA6E28', '#46F0F0', '#3CB44B', '#F032E6', 
-    '#FFE119', '#808080', '#008080', '#F58231', '#BCF60C', 
-    '#911EB4', '#E6194B' # Catch-all color (Index 11)
+    '#b3e5fc', '#617361', '#4aa3d2', '#2e8b57', 
+    '#e79ab8', '#a49f9a', '#bfa893', 
+    '#7ab460', '#897360', '#ff0000'
 ]
 UI_BRUSH_MAPPING = {
     # Main Landscape Elements
@@ -27,14 +27,13 @@ UI_BRUSH_MAPPING = {
     "FOREST_TREES":  {'color': DISTINCT_COLORS[3], 'ade_names': ['tree', 'trees', 'plant', 'bush']},
     # Specific Elements
     "FLOWERS":       {'color': DISTINCT_COLORS[4], 'ade_names': ['flower', 'flowers']},
-    "BOULDERS_CLIFF":{'color': DISTINCT_COLORS[6], 'ade_names': ['rock', 'stone', 'boulder', 'cliff']},
-    "WATERFALL":     {'color': DISTINCT_COLORS[7], 'ade_names': ['waterfall']},
+    "BOULDERS_CLIFF":{'color': DISTINCT_COLORS[5], 'ade_names': ['rock', 'stone', 'boulder', 'cliff']},
     # Ground/Trail Elements
-    "PATH_ROAD":     {'color': DISTINCT_COLORS[8], 'ade_names': ['road', 'path', 'trail', 'sidewalk']},
-    "GRASS_FIELD":   {'color': DISTINCT_COLORS[9], 'ade_names': ['grass', 'lawn', 'field', 'meadow']},
-    "EARTH_LAND":    {'color': DISTINCT_COLORS[5], 'ade_names': ['earth', 'land', 'soil', 'ground']}, 
+    "PATH_ROAD":     {'color': DISTINCT_COLORS[6], 'ade_names': ['road', 'path', 'trail', 'sidewalk']},
+    "GRASS_FIELD":   {'color': DISTINCT_COLORS[7], 'ade_names': ['grass', 'lawn', 'field', 'meadow']},
+    "EARTH_LAND":    {'color': DISTINCT_COLORS[8], 'ade_names': ['earth', 'land', 'soil', 'ground']}, 
     # Catch-all (Kept for completeness but excluded from binary mask stacking)
-    "INVALID_OTHER": {'color': DISTINCT_COLORS[11], 'ade_names': []} 
+    "INVALID_OTHER": {'color': DISTINCT_COLORS[9], 'ade_names': []} 
 }
 
 # List of UI classes used for the binary mask channels (excludes the catch-all)

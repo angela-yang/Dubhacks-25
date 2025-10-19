@@ -102,7 +102,7 @@ export default function ResultsPage() {
                 <div className="p-4 text-white">
                   <h3 className="text-lg font-semibold truncate">{result.id}</h3>
                   <p className="text-sm">
-                    Match Score: {result.score.toFixed(4)}
+                    Match Score: {result.score}
                   </p>
                 </div>
               </div>

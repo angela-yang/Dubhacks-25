@@ -98,18 +98,50 @@ def resize_mask_stack(mask_stack, target_shape):
 def calculate_avg_channel_metric(mask_stack1, mask_stack2, metric='iou'):
     mask_stack2 = resize_mask_stack(mask_stack2, mask_stack1.shape[1:])
     scores = []
-    for i in range(mask_stack1.shape[0]):
-        mask1, mask2 = mask_stack1[i], mask_stack2[i]
-        if metric == 'iou':
-            intersection = np.sum(mask1 & mask2)
-            union = np.sum(mask1 | mask2)
-            score = 1.0 if union == 0 else intersection / union
-        else: # 'dice'
-            intersection = np.sum(mask1 * mask2)
-            sum_masks = np.sum(mask1) + np.sum(mask2)
-            score = 1.0 if sum_masks == 0 else (2.0 * intersection) / sum_masks
-        scores.append(score)
+    
+    # Check all channels (including sky, or start from 1, your choice)
+    for i in range(1, mask_stack1.shape[0]):
+        mask1 = mask_stack1[i]
+        mask2 = mask_stack2[i]
+        
+        # --- NEW LOGIC ---
+        # Only score this channel if it's present in AT LEAST one of the images
+        # We use a small threshold in case of artifacts
+        if np.sum(mask1) > 10 or np.sum(mask2) > 10: 
+            if metric == 'iou':
+                intersection = np.sum(mask1 & mask2)
+                union = np.sum(mask1 | mask2)
+                score = 1.0 if union == 0 else intersection / union
+            else: # 'dice'
+                intersection = np.sum(mask1 * mask2)
+                sum_masks = np.sum(mask1) + np.sum(mask2)
+                score = 1.0 if sum_masks == 0 else (2.0 * intersection) / sum_masks
+            
+            scores.append(score)
+            
+    # --- MODIFIED RETURN ---
+    # If no channels were present at all (e.g., two blank images), return 0
+    # Otherwise, return the mean of the scores we *did* calculate.
+    if not scores:
+        return 0.0
+    
     return np.mean(scores)
+
+# def calculate_avg_channel_metric(mask_stack1, mask_stack2, metric='iou'):
+#     mask_stack2 = resize_mask_stack(mask_stack2, mask_stack1.shape[1:])
+#     scores = []
+#     for i in range(1, mask_stack1.shape[0]):
+#         mask1, mask2 = mask_stack1[i], mask_stack2[i]
+#         if metric == 'iou':
+#             intersection = np.sum(mask1 & mask2)
+#             union = np.sum(mask1 | mask2)
+#             score = 1.0 if union == 0 else intersection / union
+#         else: # 'dice'
+#             intersection = np.sum(mask1 * mask2)
+#             sum_masks = np.sum(mask1) + np.sum(mask2)
+#             score = 1.0 if sum_masks == 0 else (2.0 * intersection) / sum_masks
+#         scores.append(score)
+#     return np.mean(scores)
 
 def calculate_cosine_similarity(vec1, vec2):
     vec1 = vec1 / np.linalg.norm(vec1)
@@ -133,7 +165,9 @@ def generate_text_prompt_from_sketch(sketch_pil_image, color_map, detected_class
     
     json_instruction = (
         "Analyze the sketch and the detected elements. "
-        "Generate a single, short, descriptive phrase (max 10 words) that captures the main elements and their spatial relationship. "
+        "Generate a single, short, descriptive phrase (max 10 words) that captures the main elements and their spatial relationship." 
+        "DO NOT USE COLOR NAMES LIKE 'GREEN' OR 'BLUE' OR INCLUDE 'SKY' ELEMENT IN YOUR RESPONSE"
+        "TRY TO NOT USE ADJECTIVES"
         "Focus on the key features.\n"
         "Your response MUST be a single, valid JSON object matching this schema:\n"
         "```json\n"
@@ -197,12 +231,14 @@ async def search_hikes(file: UploadFile = File(...)):
             
             comp_score = calculate_avg_channel_metric(user_mask_stack, db_mask_stack, metric=METRIC)
             clip_score = calculate_cosine_similarity(user_text_vector, db_vector)
-            final_score = (WEIGHT_IOU * comp_score) + (WEIGHT_CLIP * clip_score)
+            text_score = f"({WEIGHT_IOU} * {comp_score}) + ({WEIGHT_CLIP} * {clip_score})"
+            final_score = WEIGHT_IOU * comp_score + WEIGHT_CLIP * clip_score
             
             file_base = os.path.basename(db_mask_path).replace('_masks.npy', '')
             all_scores.append({
                 'file_base': file_base,
                 'score': final_score,
+                'text_score': text_score,
                 'comp_score': comp_score,
                 'clip_score': clip_score
             })
@@ -218,7 +254,7 @@ async def search_hikes(file: UploadFile = File(...)):
             
             results_to_send.append({
                 'id': res['file_base'],
-                'score': res['score'],
+                'score': res['text_score'],
                 # These URLs point to the /public folder in Next.js
                 'original_image_url': f"/images/original/{res['file_base']}{extension}",
                 'segmentation_map_url': f"/images/processed/{res['file_base']}_ui_map.png"
