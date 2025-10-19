@@ -4,6 +4,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // <-- IMPORT useRouter
 import { FaQuestionCircle } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 type BrushType =
   | "Sky" | "Mountain" | "Lake" | "Trees" | "Flowers"
@@ -173,8 +174,8 @@ const Canvas: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-4 space-y-4">
-      <div className="flex flex-wrap justify-center gap-3 items-center">
+    <div className="flex flex-col items-center p-4 space-y-4 z-50">
+      <div className="flex flex-wrap justify-center gap-3 items-center z-50">
         {(Object.keys(brushColors) as BrushType[]).map((type) => (
           <button
             key={type}
@@ -190,7 +191,7 @@ const Canvas: React.FC = () => {
         ))}
       </div>
 
-      <div className="flex flex-wrap justify-center gap-4 items-center mt-2">
+      <div className="flex flex-wrap justify-center gap-4 items-center mt-2 z-50">
         <div className="flex items-center space-x-2">
           <label className="text-sm font-medium">Size:</label>
           <input
@@ -205,7 +206,7 @@ const Canvas: React.FC = () => {
 
         <button
           onClick={clearCanvas}
-          className="px-4 py-2 rounded-2xl bg-[rgb(223,84,86)] text-white font-semibold hover:bg-[rgb(187,58,61)] transition-all cursor-pointer"
+          className="px-4 py-2 rounded-2xl bg-[rgb(223,84,86)] text-white font-semibold hover:bg-[rgb(187,58,61)] transition-all z-50 cursor-pointer"
         >
           Clear
         </button>
@@ -214,21 +215,21 @@ const Canvas: React.FC = () => {
         <button
           onClick={submitCanvas}
           disabled={isLoading} // <-- NEW: Disable when loading
-          className="px-4 py-2 rounded-2xl bg-[rgb(84,190,121)] text-white font-semibold hover:bg-[rgb(60,162,96)] transition-all cursor-pointer disabled:bg-gray-500"
+          className="px-4 py-2 rounded-2xl bg-[rgb(84,190,121)] text-white font-semibold hover:bg-[rgb(60,162,96)] transition-all z-50 cursor-pointer disabled:bg-gray-500"
         >
           {isLoading ? "Searching..." : "Submit"}
         </button>
 
         <button
           onClick={exportCanvas}
-          className="px-4 py-2 rounded-2xl bg-[rgb(235,195,117)] text-white font-semibold hover:bg-[rgb(216,175,87)] transition-all cursor-pointer"
+          className="px-4 py-2 rounded-2xl bg-[rgb(235,195,117)] text-white font-semibold hover:bg-[rgb(216,175,87)] transition-all z-50 cursor-pointer"
         >
           Export
         </button>
 
         <button
           onClick={() => setShowHelp(true)}
-          className="flex items-center justify-center text-white hover:text-gray-300 text-2xl"
+          className="flex items-center justify-center text-white hover:text-gray-300 z-50 text-2xl"
           title="Help"
         >
           <FaQuestionCircle />
@@ -237,7 +238,7 @@ const Canvas: React.FC = () => {
 
 
       {showHelp && (
-        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 z-100">
           <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm text-center space-y-4">
             <h2 className="text-lg font-semibold text-blue-500">How to Use</h2>
             <p className="text-sm text-gray-700">
@@ -255,15 +256,29 @@ const Canvas: React.FC = () => {
         </div>
       )}
 
+      <motion.div
+        initial={{ y: 200, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.5, duration: 1.5, type: "spring", stiffness: 50 }}
+        className="absolute bottom-[-12%] z-0"
+      >
+        <img
+          src={"/images/easel.png"}
+          alt="Easel"
+          className="object-contain"
+          style={{ maxWidth: "100%" }}
+        />
+      </motion.div>
+
       <canvas
         ref={canvasRef}
-        width={600}
-        height={600}
+        width={570}
+        height={570}
         onMouseDown={startDrawing}
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
-        className="cursor-crosshair rounded-lg"
+        className="cursor-crosshair border-4 border-gray-400 rounded-lg z-50"
       />
     </div>
   );
