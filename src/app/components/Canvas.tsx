@@ -188,15 +188,21 @@ const Canvas: React.FC = () => {
             {type}
           </button>
         ))}
-        {/* ... (Brush Size, Clear, and Export buttons remain the same) ... */}
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-4 items-center mt-2">
         <div className="flex items-center space-x-2">
           <label className="text-sm font-medium">Size:</label>
           <input
-            type="range" min="10" max="100" value={brushSize}
+            type="range"
+            min="10"
+            max="100"
+            value={brushSize}
             onChange={(e) => setBrushSize(Number(e.target.value))}
             className="w-24 cursor-pointer"
           />
         </div>
+
         <button
           onClick={clearCanvas}
           className="px-4 py-2 rounded-2xl bg-[rgb(223,84,86)] text-white font-semibold hover:bg-[rgb(187,58,61)] transition-all cursor-pointer"
@@ -219,15 +225,15 @@ const Canvas: React.FC = () => {
         >
           Export
         </button>
-      </div>
 
-      <button
-        onClick={() => setShowHelp(true)}
-        className="flex items-center justify-center text-gray-800 hover:text-blue-500 text-2xl"
-        title="Help"
-       >
-        <FaQuestionCircle />
-      </button>
+        <button
+          onClick={() => setShowHelp(true)}
+          className="flex items-center justify-center text-white hover:text-gray-300 text-2xl"
+          title="Help"
+        >
+          <FaQuestionCircle />
+        </button>
+      </div>
 
 
       {showHelp && (
