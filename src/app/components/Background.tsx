@@ -74,7 +74,7 @@ export default function Background() {
         initial={{ y: 300, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.9, duration: 1.5, type: "spring", stiffness: 50 }}
-        className="absolute left-[-5%] bottom-[-10%]"
+        className="absolute left-[-5%] bottom-[-5%]"
       >
         <div style={parallaxStyle(1.5, 2.0)}>
           <img
