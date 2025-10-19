@@ -33,8 +33,8 @@ export default function HomeNav() {
                 <Link href="/saved" className="flex items-center gap-2 p-2 rounded-xl hover:bg-[rgb(76,101,112)] transition">
                     <FaBookmark /> Saved
                 </Link>
-                <Link href="/profile" className="flex items-center gap-2 p-2 rounded-xl hover:bg-[rgb(76,101,112)] transition">
-                    <FaUser /> Profile
+                <Link href="/results" className="flex items-center gap-2 p-2 rounded-xl hover:bg-[rgb(76,101,112)] transition">
+                    <FaUser /> Results
                 </Link>
                 </div>
             )}

@@ -242,7 +242,7 @@ const Canvas: React.FC = () => {
             <h2 className="text-lg font-semibold text-blue-500">How to Use</h2>
             <p className="text-sm text-gray-700">
               Select a brush to paint different elements. 
-              Use the slider to change brush size. 
+              Use the slider to change brush size, and paint out a scene as if you were taking a picture of your perfect hike spot.
               Click “Submit” to find your real-world location!
            </p>
            <button
