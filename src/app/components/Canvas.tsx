@@ -4,16 +4,16 @@ import React, { useRef, useState, useEffect } from "react";
 type BrushType = "Sky" | "Mountain" | "Lake" | "Trees" | "Flowers" | "Boulders" | "Waterfall" | "Path" | "Grass" | "Dirt" | "Eraser";
 
 const brushColors: Record<BrushType, string> = {
-  Sky: "#B3E5FC",
-  Mountain: "#617361",
-  Lake: "#4AA3D2",
-  Trees: "#2E8B57",
-  Flowers: "#E79AB8",
-  Boulders: "#A49F9A",
-  Waterfall: "#89D6FF",
-  Path: "#BFA893",
-  Grass: "#7AB460",
-  Dirt: "#897360",
+  Sky: "rgb(179,229,252)",
+  Mountain: "rgb(97,115,97)",
+  Lake: "rgb(74,163,210)",
+  Trees: "rgb(46,139,87)",
+  Flowers: "rgb(231,154,184)",
+  Boulders: "rgb(164,159,154)",
+  Waterfall: "rgb(137,214,255)",
+  Path: "rgb(191,168,147)",
+  Grass: "rgb(122,180,96)",
+  Dirt: "rgb(137,115,96)",
   Eraser: "rgb(239,215,198)",
 };
 
