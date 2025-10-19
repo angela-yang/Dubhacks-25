@@ -5,14 +5,14 @@ type BrushType = "Sky" | "Mountain" | "Lake" | "Trees" | "Flowers" | "Boulders" 
 
 const brushColors: Record<BrushType, string> = {
   Sky: "#B3E5FC",
-  Mountain: "#7F7A78",
+  Mountain: "#617361",
   Lake: "#4AA3D2",
   Trees: "#2E8B57",
   Flowers: "#E79AB8",
   Boulders: "#A49F9A",
   Waterfall: "#89D6FF",
-  Path: "#C0B6AD",
-  Grass: "#9AD0AB",
+  Path: "#BFA893",
+  Grass: "#7AB460",
   Dirt: "#897360",
   Eraser: "rgb(239,215,198)",
 };

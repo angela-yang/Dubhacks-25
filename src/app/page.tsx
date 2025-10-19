@@ -6,7 +6,7 @@ import Link from "next/link"
 
 export default function Home() {
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[rgb(58,87,86)]">
+    <div className="relative w-full h-screen overflow-hidden bg-[rgb(147,194,207)]">
       <HomeNav />
       <Background />
 
