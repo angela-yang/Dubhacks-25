@@ -22,7 +22,7 @@ const Canvas: React.FC = () => {
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.fillStyle = "rgb(239,215,198)";
-        ctx.fillRect(0, 0, 500, 500);
+        ctx.fillRect(0, 0, 600, 600);
         ctx.lineCap = "round";
       }
     }
@@ -118,8 +118,8 @@ const Canvas: React.FC = () => {
 
       <canvas
         ref={canvasRef}
-        width={500}
-        height={500}
+        width={600}
+        height={600}
         onMouseDown={startDrawing}
         onMouseMove={draw}
         onMouseUp={stopDrawing}

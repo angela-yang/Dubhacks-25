@@ -7,9 +7,9 @@ export default function Home() {
       <HomeNav />
       <Background />
       <div className="w-full flex flex-col justify-center text-center absolute mt-50 z-5">
-        <h1 className="text-4xl bold text-white"> Paint-a-Hike </h1>
+        <h1 className="font-mono text-4xl bold text-white"> Paint-a-Hike </h1>
         <br/>
-        <h3 className="text-3xl text-white">Bring your dream hike to life!</h3>
+        <h3 className="font-mono text-3xl text-white">Bring your dream hike to life!</h3>
       </div>
       <link rel="icon" href="/images/mt.png" type="image/png" sizes="any" />
     </div>
