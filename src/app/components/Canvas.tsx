@@ -122,6 +122,17 @@ const Canvas: React.FC = () => {
     }
   };
 
+  const exportCanvas = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dataURL = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = "painting.png";
+    link.click();
+  };
+
   return (
     <div className="flex flex-col items-center p-4 space-y-4">
       <div className="flex flex-wrap justify-center gap-3 items-center">
@@ -163,6 +174,13 @@ const Canvas: React.FC = () => {
           className="px-4 py-2 rounded-2xl bg-[rgb(84,190,121)] text-white font-semibold hover:bg-[rgb(60,162,96)] transition-all cursor-pointer"
         >
           Submit
+        </button>
+
+        <button
+          onClick={exportCanvas}
+          className="px-4 py-2 rounded-2xl bg-[rgb(235,195,117)] text-white font-semibold hover:bg-[rgb(216,175,87)] transition-all cursor-pointer"
+        >
+          Export
         </button>
       </div>
 
