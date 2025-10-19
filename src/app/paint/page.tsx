@@ -46,7 +46,7 @@ export default function Home() {
 
       <Canvas />
 
-      <link rel="icon" href="/images/mt.png" type="image/png" sizes="any" />
+      <link rel="icon" href="/images/pah.png" type="image/png" sizes="any" />
     </div>
   )
 }
