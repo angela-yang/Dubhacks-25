@@ -132,7 +132,7 @@ const Canvas: React.FC = () => {
             className={`px-4 py-2 rounded-2xl shadow-md font-semibold transition-all ${
               brush === type
                 ? "bg-blue-500 text-white"
-                : "bg-gray-400 hover:bg-gray-500 cursor-pointer"
+                : "bg-gray-600 hover:bg-gray-700 cursor-pointer"
             }`}
           >
             {type}
@@ -147,20 +147,20 @@ const Canvas: React.FC = () => {
             max="100"
             value={brushSize}
             onChange={(e) => setBrushSize(Number(e.target.value))}
-            className="w-24"
+            className="w-24 cursor-pointer"
           />
         </div>
 
         <button
           onClick={clearCanvas}
-          className="px-4 py-2 rounded-2xl bg-red-400 text-white font-semibold hover:bg-red-600 transition-all cursor-pointer"
+          className="px-4 py-2 rounded-2xl bg-[rgb(223,84,86)] text-white font-semibold hover:bg-[rgb(187,58,61)] transition-all cursor-pointer"
         >
           Clear
         </button>
 
         <button
           onClick={submitCanvas}
-          className="px-4 py-2 rounded-2xl bg-emerald-500 text-white font-semibold hover:bg-emerald-700 transition-all cursor-pointer"
+          className="px-4 py-2 rounded-2xl bg-[rgb(84,190,121)] text-white font-semibold hover:bg-[rgb(60,162,96)] transition-all cursor-pointer"
         >
           Submit
         </button>
