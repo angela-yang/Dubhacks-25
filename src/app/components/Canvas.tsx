@@ -14,7 +14,7 @@ const brushColors: Record<BrushType, string> = {
   Path: "rgb(191,168,147)",
   Grass: "rgb(122,180,96)",
   Dirt: "rgb(137,115,96)",
-  Eraser: "rgb(239,215,198)",
+  Eraser: "rgb(179,229,252)",
 };
 
 const Canvas: React.FC = () => {

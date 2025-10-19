@@ -1,10 +1,11 @@
 import HomeNav from "../components/HomeNav"
 import Canvas from "../components/Canvas"
+import Background from "../components/Background"
 import { FaQuestionCircle } from "react-icons/fa";
 
 export default function Home() {
   return (
-    <div className="w-full h-screen bg-cover bg-center" style={{ backgroundColor: "rgb(147,194,207)"}}>
+    <div className="w-full h-screen bg-cover bg-center" style={{ backgroundColor: "rgb(88,128,115)"}}>
       <HomeNav />
 
       <div className="flex flex-col items-center justify-center text-center relative z-5 -translate-y-2">
