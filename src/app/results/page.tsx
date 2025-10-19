@@ -6,7 +6,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaArrowDown, FaArrowLeft } from "react-icons/fa";
 import HomeNav from "../components/HomeNav";
-import { LargeNumberLike } from "crypto";
 
 interface SearchResult {
   id: string;
@@ -28,24 +27,7 @@ export default function ResultsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isScrolling, setIsScrolling] = useState(false);
 
-  /*
   useEffect(() => {
-    // On page load, read both items from session storage
-    const storedResults = sessionStorage.getItem("searchResults");
-    const storedSketch = sessionStorage.getItem("userSketch"); // <-- NEW
-
-    if (storedResults) {
-      setResults(JSON.parse(storedResults));
-    }
-    if (storedSketch) {
-      setUserSketch(storedSketch); // <-- NEW
-    }
-    setIsLoading(false);
-  }, []); // Empty dependency array ensures this runs only once on load
-  */
-
-  useEffect(() => {
-    // HARDCODED RESULTS
     const hardcodedResults: SearchResult[] = [
       {
         id: "Hike_1",
@@ -55,9 +37,9 @@ export default function ResultsPage() {
         distance: 420,
         difficulty: "hard",
         region: "Mount Mountain",
-        trailhead: "trailhead",
-        latitude: -10.000,
-        longitude: 15.000,
+        trailhead: "Trailhead 1",
+        latitude: -10.0,
+        longitude: 15.0,
       },
       {
         id: "Hike_2",
@@ -67,9 +49,9 @@ export default function ResultsPage() {
         distance: 420,
         difficulty: "easy",
         region: "Mountain",
-        trailhead: "trailhead",
-        latitude: 112.000,
-        longitude: 17.000,
+        trailhead: "Trailhead 2",
+        latitude: 112.0,
+        longitude: 17.0,
       },
       {
         id: "Hike_3",
@@ -79,51 +61,25 @@ export default function ResultsPage() {
         distance: 420,
         difficulty: "medium",
         region: "Trail Mountain",
-        trailhead: "trailhead",
-        latitude: -10.000,
-        longitude: 15.000,
-      },
-      {
-        id: "Hike_4",
-        original_image_url: "/images/temp/hike4.jpeg",
-        elevation: 10,
-        trail_length: 67,
-        distance: 420,
-        difficulty: "super hard",
-        region: "Mountain",
-        trailhead: "trailhead",
-        latitude: 20.000,
-        longitude: 35.000,
-      },
-      {
-        id: "Hike_5",
-        original_image_url: "/images/temp/hike5.jpg",
-        elevation: 10,
-        trail_length: 67,
-        distance: 420,
-        difficulty: "super easy",
-        region: "Mountain",
-        trailhead: "trailhead",
-        latitude: 10.000,
-        longitude: 15.000,
+        trailhead: "Trailhead 3",
+        latitude: -10.0,
+        longitude: 15.0,
       },
     ];
 
     setResults(hardcodedResults);
+    setUserSketch(sessionStorage.getItem("userSketch"));
     setIsLoading(false);
   }, []);
 
-  // Scroll handler to move between results
   useEffect(() => {
     const handleScroll = (e: WheelEvent) => {
       if (isScrolling) return;
       setIsScrolling(true);
 
       if (e.deltaY > 0) {
-        // Scroll down
         setCurrentIndex((prev) => (prev + 1) % results.length);
       } else if (e.deltaY < 0) {
-        // Scroll up
         setCurrentIndex((prev) => (prev - 1 + results.length) % results.length);
       }
 
@@ -137,73 +93,111 @@ export default function ResultsPage() {
   return (
     <div className="w-full h-screen overflow-hidden bg-[rgb(106,132,146)]">
       <HomeNav />
-      <div className="fixed top-0 left-0 w-full h-full flex flex-col items-center justify-center text-center text-white">
-        <AnimatePresence mode="wait">
-          {results.length > 0 && (
-            <motion.div
-              key={results[currentIndex].id}
-              initial={{ opacity: 0, y: 80 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -80 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="w-full flex flex-col items-center justify-center"
-            >
-              <motion.h1
-                className="text-4xl font-bold mb-4 drop-shadow-lg -translate-y-10"
-                initial={{ opacity: 0, y: 20 }}
+
+      {isLoading && <p className="text-white text-center mt-20">Loading results...</p>}
+
+      {!isLoading && results.length === 0 && (
+        <div className="text-center mt-20">
+          <p className="text-white text-xl mb-4">No results found.</p>
+          <Link href="/paint">
+            <button className="bg-[rgb(76,101,112)] hover:bg-[rgb(106,132,146)] text-white text-xl font-semibold px-8 py-3 rounded-full shadow-lg">
+              Try Painting Again
+            </button>
+          </Link>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="fixed top-0 left-0 w-full flex flex-col items-center pt-20">
+        <motion.div className="text-center pt-5 mb-10">
+          <motion.h1
+            className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            Your Imagination Comes to Life...
+          </motion.h1>
+
+          <motion.h3
+            className="mt-4 text-2xl md:text-3xl text-gray-100 font-light tracking-wide"
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1.2 }}
+          >
+            ({results[currentIndex]?.latitude.toFixed(4)}, {results[currentIndex]?.longitude.toFixed(4)})
+          </motion.h3>
+        </motion.div>
+
+        <div className="flex w-full h-full justify-center items-start space-x-12 px-6 md:px-16">
+          {/* LEFT COLUMN */}
+          {userSketch && (
+            <div className="flex-shrink-0 flex flex-col items-center mt-15">
+              <h2 className="text-xl text-white font-semibold mb-3">Your Sketch</h2>
+              <img
+                src={userSketch}
+                alt="User's sketch"
+                className="rounded-lg shadow-lg border-2 border-white object-cover"
+                style={{ width: "200px", height: "200px" }}
+              />
+            </div>
+          )}
+
+          {/* RIGHT COLUMN */}
+            {!isLoading && results.length > 0 && (
+            <AnimatePresence mode="wait">
+                <motion.div
+                key={results[currentIndex].id}
+                initial={{ opacity: 0, y: 80 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                Your Imagination Comes to Life...
-              </motion.h1>
-
-              <motion.h3
-                className="mt-4 text-2xl md:text-3xl text-gray-100 font-light -translate-y-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-              >
-                <p><span>(</span>{results[currentIndex].latitude.toFixed(4)}<span>, </span>{results[currentIndex].longitude.toFixed(4)}<span>)</span></p>
-              </motion.h3>
-
-              <div className="flex flex-col justify-center w-full md:w-1/3 text-left text-gray-100">
-                <p className="text-3xl mb-1 text-bold">{results[currentIndex].region}</p>
-                <p className="text-lg italic">{results[currentIndex].trailhead}</p>
-              </div>
-            
-              <div className="flex flex-col w-full md:w-1/3">
-                <div className="relative w-full h-64 md:h-72 rounded-2xl overflow-hidden shadow-lg">
-                  <Image
+                exit={{ opacity: 0, y: -80 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
+                className="flex w-full md:w-1/2 bg-[rgba(255,255,255,0.1)] backdrop-blur-md rounded-2xl shadow-2xl p-6 py-7 space-x-6 mt-10"
+                >
+                <div className="relative w-1/2 h-50 md:h-64 rounded-2xl overflow-hidden shadow-lg flex-shrink-0">
+                    <Image
                     src={results[currentIndex].original_image_url}
                     alt={`Original image of ${results[currentIndex].id}`}
-                    layout="fill"
-                    objectFit="cover"
-                  />
+                    fill
+                    className="object-cover rounded-2xl"
+                    />
                 </div>
-                <div className="mt-4 text-left text-gray-100 space-y-2">
-                  <p><span className="font-semibold">Elevation:</span> {results[currentIndex].elevation} <span className="font-semibold"> mi</span></p>
-                  <p><span className="font-semibold">Trail Length:</span> {results[currentIndex].trail_length} <span className="font-semibold"> ft</span></p>
-                  <p><span className="font-semibold">Distance:</span> {results[currentIndex].distance}<span className="font-semibold"> ft</span></p>
-                  <p><span className="font-semibold">Difficulty:</span> {results[currentIndex].difficulty}</p>
-                </div>
-              </div>
 
-              <motion.div
-                className="absolute bottom-16 flex flex-col items-center text-white"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1, duration: 1 }}
-              >
-                <p className="text-lg mb-2">Scroll to see more results</p>
-                <FaArrowDown className="text-2xl animate-bounce" />
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <div className="flex flex-col justify-start text-gray-100 space-y-2 w-1/2">
+                    <h1 className="text-2xl font-bold">{results[currentIndex].region}</h1>
+                    <p className="text-xl italic mb-5">{results[currentIndex].trailhead}</p>
+                    <p>
+                    <span className="font-semibold">Elevation:</span> {results[currentIndex].elevation} mi
+                    </p>
+                    <p>
+                    <span className="font-semibold">Trail Length:</span> {results[currentIndex].trail_length} ft
+                    </p>
+                    <p>
+                    <span className="font-semibold">Distance:</span> {results[currentIndex].distance} ft
+                    </p>
+                    <p>
+                    <span className="font-semibold">Difficulty:</span> {results[currentIndex].difficulty}
+                    </p>
+                </div>
+                </motion.div>
+            </AnimatePresence>
+            )}
+        </div>
       </div>
 
+      {/* Scrolling indicator */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-white"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1, duration: 1 }}
+      >
+        <p className="text-lg mb-2">Scroll to see more results</p>
+        <FaArrowDown className="text-2xl animate-bounce" />
+      </motion.div>
+
       {/* Back button */}
-      <div className="fixed top-5 transform translate-x-1/2">
+      <div className="fixed top-5 left-5 translate-x-1/2">
         <Link href="/paint">
           <button className="flex items-center justify-center text-white text-lg font-semibold py-3 transition-all cursor-pointer">
             <FaArrowLeft className="text-xl mr-2" />
