@@ -18,7 +18,7 @@ export default function Home() {
         <motion.div
           initial={{ y: 200, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1.5, type: "spring", stiffness: 50 }}
+          transition={{ delay: 0.2, duration: 1.5, type: "spring", stiffness: 50 }}
           className="absolute left-[-5%] bottom-0 z-0"
         >
           <img
@@ -32,7 +32,7 @@ export default function Home() {
         <motion.div
           initial={{ y: 200, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 1.5, type: "spring", stiffness: 50 }}
+          transition={{ delay: 0.3, duration: 1.5, type: "spring", stiffness: 50 }}
           className="absolute left-[-5%] top-0 z-0"
         >
           <img

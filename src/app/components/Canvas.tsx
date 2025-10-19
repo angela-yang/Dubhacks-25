@@ -259,7 +259,7 @@ const Canvas: React.FC = () => {
       <motion.div
         initial={{ y: 200, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.5, duration: 1.5, type: "spring", stiffness: 50 }}
+        transition={{ duration: 1.5, type: "spring", stiffness: 50 }}
         className="absolute bottom-[-12%] z-0"
       >
         <img

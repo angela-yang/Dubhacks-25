@@ -10,7 +10,7 @@ export default function Home() {
       <HomeNav />
       <Background />
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center -translate-y-15 text-center z-10 px-4">
+      <div className="absolute inset-0 flex flex-col items-center justify-center -translate-y-30 text-center z-10 px-4">
         <motion.h1
           className="text-6xl md:text-7xl font-bold text-white drop-shadow-lg"
           initial={{ opacity: 0, y: 30 }}
@@ -21,7 +21,7 @@ export default function Home() {
         </motion.h1>
 
         <motion.h3
-          className="mt-4 text-2xl md:text-3xl text-gray-200 font-light"
+          className="mt-4 text-2xl md:text-3xl text-gray-100 font-light"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}

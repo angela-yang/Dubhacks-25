@@ -58,11 +58,11 @@ export default function Background() {
         initial={{ y: 250, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.7, duration: 1.5, type: "spring", stiffness: 50 }}
-        className="absolute left-[-5%] bottom-[-5%]"
+        className="absolute left-[-5%] bottom-[-2%]"
       >
-        <div style={parallaxStyle(0.8, 0.8)}>
+        <div style={parallaxStyle(0.8, 0.7)}>
           <img
-            src={"/images/mt2.png"}
+            src={"/images/mt2-2.png"}
             alt="Mountain"
             className="object-contain"
             style={{ maxWidth: "110%" }}
@@ -74,9 +74,9 @@ export default function Background() {
         initial={{ y: 300, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.9, duration: 1.5, type: "spring", stiffness: 50 }}
-        className="absolute left-[-5%] bottom-[-5%]"
+        className="absolute left-[-5%] bottom-[-2%]"
       >
-        <div style={parallaxStyle(1.5, 2.0)}>
+        <div style={parallaxStyle(1.5, 1.0)}>
           <img
             src={"/images/mt1.png"}
             alt="Mountain"
@@ -90,7 +90,7 @@ export default function Background() {
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1.1, duration: 1.2, type: "spring", stiffness: 100 }}
-        className="absolute left-[-5%] bottom-[-4%]"
+        className="absolute left-[-5%] bottom-[-2%]"
       >
         <div style={parallaxStyle(1.0, 1.0)}>
           <img
